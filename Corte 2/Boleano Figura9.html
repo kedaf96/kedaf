@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Geometría Constructiva de Sólidos: Ejercicio 9</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>                 
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="js/csg.js"></script>
+	<script src="js/THREE.CSG.js"></script>
+    <script>
+		var scene, aspect, camera, renderer, controls;
+		init();
+		animate();
+		function init(){
+			//INICIALIZACIÓN
+	        scene = new THREE.Scene();
+	        aspect = window.innerWidth / window.innerHeight;
+	        camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000);              //TRABAJO DE: Paola Andrea Jiménez Mayor
+	        renderer = new THREE.WebGLRenderer();                                      //6000280
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        document.body.appendChild( renderer.domElement );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			
+			//ELEMENTOS COMUNES
+			var size = 100;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+		  	var color = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+			
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+			scene.add( axesHelper );
+			
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color, color );
+			scene.add( gridHelperXZ );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+            //CREAR ILUMINACIÓN
+            var ambient = new THREE.AmbientLight( 0xffffff, 2 );
+            scene.add( ambient );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+            pointLight.position.set( -5, 1, 5 );
+            scene.add( pointLight );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, .5, 100 );
+            pointLight.position.set( 5, 1, -5 );
+            scene.add( pointLight );
+            
+            
+            
+            //CREAR LOS MATERIALES
+            var material1 = new THREE.MeshStandardMaterial( { color: 0x878EFF, metalness: 0.5, roughness: 0.1 } );
+			var material2 = new THREE.MeshStandardMaterial( { color: 0x65EBD6, metalness: 0.5, roughness: 0.1 } );
+            var material3 = new THREE.MeshStandardMaterial( { color: 0xCEFF7A, metalness: 0.5, roughness: 0.1 } );
+            var material4 = new THREE.MeshStandardMaterial( { color: 0x5DEB6B, metalness: 0.5, roughness: 0.1 } );
+            var material5 = new THREE.MeshStandardMaterial( { color: 0xF3A0FF, metalness: 0.5, roughness: 0.1 } );
+            var material6 = new THREE.MeshStandardMaterial( { color: 0xCA70FF, metalness: 0.5, roughness: 0.1 } );
+            var material7 = new THREE.MeshStandardMaterial( { color: 0xEB4E43, metalness: 0.5, roughness: 0.1 } );
+            var material8 = new THREE.MeshStandardMaterial( { color: 0xFFE079,  metalness: 0.5, roughness: 0.1 } );
+            var material9 = new THREE.MeshStandardMaterial( { color: 0xEB935C, metalness: 0.5, roughness: 0.1 } );
+            var material10 = new THREE.MeshStandardMaterial( { color: 0xFF7069, metalness: 0.5, roughness: 0.1 } );
+           
+			
+			//CREAR LAS GEOMETRÍAS
+			var Rectangulo = new THREE.BoxGeometry( 70, 20, 60 );  //Centro de la figura
+            var RectanguloBase = new THREE.Mesh( Rectangulo, material1 );
+            
+                                                                   //Parte inferior de la figura
+            var Rectangulo1 = new THREE.BoxGeometry( 20, 10, 60 );  
+            var RectanguloDebajoBase = new THREE.Mesh( Rectangulo1, material2 );
+            RectanguloDebajoBase.position.x=25;
+            RectanguloDebajoBase.position.y=-15;
+            
+            var Rectangulo2 = new THREE.BoxGeometry( 20, 18, 40 );  
+            var RectanguloDebajoBase2 = new THREE.Mesh( Rectangulo2, material2 );
+            RectanguloDebajoBase2.position.x=25;
+            RectanguloDebajoBase2.position.y=-28;
+            
+            var Rectangulo3 = new THREE.BoxGeometry( 20, 18, 2 );  
+            var RectanguloDebajoRelleno = new THREE.Mesh( Rectangulo3, material2 );
+            RectanguloDebajoRelleno.position.x=25;
+            RectanguloDebajoRelleno.position.y=-36;
+            RectanguloDebajoRelleno.position.z=-19;
+            
+            var Rectangulo4 = new THREE.BoxGeometry( 20, 18, 2 );  
+            var RectanguloDebajoRelleno2 = new THREE.Mesh( Rectangulo4, material2 );
+            RectanguloDebajoRelleno2.position.x=25;
+            RectanguloDebajoRelleno2.position.y=-36;
+            RectanguloDebajoRelleno2.position.z=19;
+            
+            var Cilindro = new THREE.CylinderGeometry( 10, 10, 20, 34);   
+            var CilindroDebajoLados = new THREE.Mesh( Cilindro, material7 );
+            CilindroDebajoLados.position.x=25;
+            CilindroDebajoLados.position.y=-20;
+            CilindroDebajoLados.position.z=30;
+            CilindroDebajoLados.rotateZ(Math.PI/2);
+            
+            var Cilindro2 = new THREE.CylinderGeometry( 10, 10, 20, 34);  
+            var CilindroDebajoLados2 = new THREE.Mesh( Cilindro2, material7 );
+            CilindroDebajoLados2.position.x=25;
+            CilindroDebajoLados2.position.y=-20;
+            CilindroDebajoLados2.position.z=-30;
+            CilindroDebajoLados2.rotateZ(Math.PI/2);
+            
+            var Cilindro3 = new THREE.CylinderGeometry( 20, 20, 20, 34);  
+            var CilindroDebajoDebajo = new THREE.Mesh( Cilindro3, material4 );
+            CilindroDebajoDebajo.position.x=25;
+            CilindroDebajoDebajo.position.y=-45;
+            CilindroDebajoDebajo.rotateZ(Math.PI/2);
+            
+            var Cilindro4 = new THREE.CylinderGeometry( 8, 8, 20, 34);  
+            var CilindroDebajoDebajoCentro = new THREE.Mesh( Cilindro4, material7 );
+            CilindroDebajoDebajoCentro.position.x=25;
+            CilindroDebajoDebajoCentro.position.y=-45;
+            CilindroDebajoDebajoCentro.rotateZ(Math.PI/2);
+            
+            var Rectangulo3 = new THREE.BoxGeometry( 10, 50, 60 );  //Parte supeior de la figura
+            var RectanguloPared = new THREE.Mesh( Rectangulo3, material5 );
+            RectanguloPared.position.x=-30;
+            RectanguloPared.position.y=35;
+            
+            var Rectangulo4 = new THREE.BoxGeometry( 60, 50, 10 );  
+            var RectanguloMitadTrianguloOf = new THREE.Mesh( Rectangulo4, material6 );
+            RectanguloMitadTrianguloOf.position.x=5;
+            RectanguloMitadTrianguloOf.position.y=35;
+            
+            var Rectangulo5 = new THREE.BoxGeometry( 78, 50, 10 );  
+            var RectanguloMitadTriangulo2 = new THREE.Mesh( Rectangulo5, material7 );
+            RectanguloMitadTriangulo2.position.x=21.1;
+            RectanguloMitadTriangulo2.position.y=54.2;
+            RectanguloMitadTriangulo2.rotation.z=150.1;
+            
+            var Cilindro5 = new THREE.CylinderGeometry( 30, 30, 40, 34);  
+            var CilindroSuperiorNivel1 = new THREE.Mesh( Cilindro5, material8 );
+            CilindroSuperiorNivel1.position.x=-15;
+            CilindroSuperiorNivel1.position.y=65;
+            CilindroSuperiorNivel1.rotateZ(Math.PI/2);
+            
+            var Cilindro6 = new THREE.CylinderGeometry( 20, 20, 34, 34);  
+            var CilindroSuperiorNivel2 = new THREE.Mesh( Cilindro6, material9 );
+            CilindroSuperiorNivel2.position.x=-18;
+            CilindroSuperiorNivel2.position.y=65;
+            CilindroSuperiorNivel2.rotateZ(Math.PI/2);
+            
+            var Cilindro7 = new THREE.CylinderGeometry( 20, 20, 6, 34);  
+            var CilindroSuperiorNivel2Relleno = new THREE.Mesh( Cilindro7, material6 );
+            CilindroSuperiorNivel2Relleno.position.x=2;
+            CilindroSuperiorNivel2Relleno.position.y=65;
+            CilindroSuperiorNivel2Relleno.rotateZ(Math.PI/2);
+            
+            var Cilindro8 = new THREE.CylinderGeometry( 10, 10, 38, 34);  
+            var CilindroSuperiorNivel3 = new THREE.Mesh( Cilindro8, material10 );
+            CilindroSuperiorNivel3.position.x=0;
+            CilindroSuperiorNivel3.position.y=65;
+            CilindroSuperiorNivel3.rotateZ(Math.PI/2);
+            
+	
+			//CONVERTIR A CSG
+			var RectanguloBaseCSG = THREE.CSG.fromMesh( RectanguloBase );
+            var RectanguloDebajoBaseCSG = THREE.CSG.fromMesh( RectanguloDebajoBase );
+            var RectanguloDebajoBase2CSG = THREE.CSG.fromMesh( RectanguloDebajoBase2 );
+            var CilindroDebajoLadosCSG = THREE.CSG.fromMesh( CilindroDebajoLados );
+            var CilindroDebajoLados2CSG = THREE.CSG.fromMesh( CilindroDebajoLados2 );
+            var CilindroDebajoDebajoCSG = THREE.CSG.fromMesh( CilindroDebajoDebajo );
+            var CilindroDebajoDebajoCentroCSG = THREE.CSG.fromMesh( CilindroDebajoDebajoCentro );
+            var RectanguloParedCSG = THREE.CSG.fromMesh( RectanguloPared );
+            var RectanguloMitadTrianguloOfCSG = THREE.CSG.fromMesh( RectanguloMitadTrianguloOf );
+            var RectanguloMitadTriangulo2CSG = THREE.CSG.fromMesh( RectanguloMitadTriangulo2 );
+            var CilindroSuperiorNivel1CSG = THREE.CSG.fromMesh( CilindroSuperiorNivel1 );
+            var CilindroSuperiorNivel2CSG = THREE.CSG.fromMesh( CilindroSuperiorNivel2 );
+            var CilindroSuperiorNivel2RellenoCSG = THREE.CSG.fromMesh( CilindroSuperiorNivel2Relleno );
+            var CilindroSuperiorNivel3CSG = THREE.CSG.fromMesh( CilindroSuperiorNivel3 );
+            
+			
+			//APLICAR LAS OPERACIONES
+            var result = RectanguloDebajoBaseCSG.subtract( CilindroDebajoLadosCSG );
+            var result2 = result.subtract( CilindroDebajoLados2CSG );
+			var result3 = CilindroDebajoDebajoCSG.subtract( CilindroDebajoDebajoCentroCSG );
+            var result4 = RectanguloMitadTrianguloOfCSG.subtract( RectanguloMitadTriangulo2CSG );
+            var result5 = CilindroSuperiorNivel1CSG.subtract( CilindroSuperiorNivel2RellenoCSG );
+            var result6 = result5.subtract( CilindroSuperiorNivel3CSG );
+            var result7 = result6.subtract( CilindroSuperiorNivel3CSG );
+            
+			
+			//CONVERTIR A THREE
+            RectanguloDebajoBase = THREE.CSG.toMesh( result ); 
+            RectanguloDebajoBase = THREE.CSG.toMesh( result2 );
+            CilindroDebajoDebajo = THREE.CSG.toMesh( result3 );
+            RectanguloMitadTrianguloOf = THREE.CSG.toMesh( result4 );
+            CilindroSuperiorNivel1 = THREE.CSG.toMesh( result5 );
+            CilindroSuperiorNivel1 = THREE.CSG.toMesh( result6 );
+            CilindroSuperiorNivel2 = THREE.CSG.toMesh( result7 );
+            
+            RectanguloDebajoBase.material = material2;
+            CilindroDebajoDebajo.material = material4;
+            RectanguloMitadTrianguloOf.material = material6;
+            CilindroSuperiorNivel1.material = material8;
+            CilindroSuperiorNivel2.material = material10;
+            
+            
+			//AGREGAR A LA ESCENA LOS DIFERENTES ELEMENTOS
+			scene.add(RectanguloBase);
+            scene.add(RectanguloDebajoBase);
+            scene.add(RectanguloDebajoBase2);
+            scene.add(RectanguloDebajoRelleno);
+            scene.add(RectanguloDebajoRelleno2);
+            //scene.add(CilindroDebajoLados);
+            //scene.add(CilindroDebajoLados2);
+            scene.add(CilindroDebajoDebajo);
+            //scene.add(CilindroDebajoDebajoCentro);
+            scene.add(RectanguloPared);
+            scene.add(RectanguloMitadTrianguloOf);
+            //scene.add(RectanguloMitadTriangulo2);
+            scene.add(CilindroSuperiorNivel1);
+            scene.add(CilindroSuperiorNivel2);
+            //scene.add(CilindroSuperiorNivel2Relleno);
+            //scene.add(CilindroSuperiorNivel3);
+            
+			
+			camera.position.x = 120;
+			camera.position.y = 30;
+		  	camera.position.z = -80;
+			camera.lookAt( origin );
+		}
+		function animate(){
+			requestAnimationFrame( animate );
+			controls.update();
+			render();
+		}
+		function render(){
+			renderer.render( scene, camera );
+		}
+    </script>
+  </body>
+</html>
