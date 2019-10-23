@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plantilla Base</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="js/csg.js"></script>
+	<script src="js/THREE.CSG.js"></script>
+	<script src="js/QuickHull.js"></script>
+	<script src="js/geometries/ConvexGeometry.js"></script>
+    <script>
+		var scene, aspect, camera, renderer, controls;
+		init();
+		animate();
+		function init(){
+			//INICIALIZACIÓN
+	        scene = new THREE.Scene();
+	        aspect = window.innerWidth / window.innerHeight;
+	        camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000);
+	        renderer = new THREE.WebGLRenderer();
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        document.body.appendChild( renderer.domElement );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			
+			//ELEMENTOS COMUNES
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+		  	var color = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+			var colorWhite = new THREE.Color( 0xFFFFFF);
+			var colorBlack = new THREE.Color( 0x000000 );
+			var colorPink = new THREE.Color( 0xEA9999 );
+			var colorGray = new THREE.Color( 0x999999 );
+			
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+			scene.add( axesHelper );
+			
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color, color );
+			scene.add( gridHelperXZ );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+
+            //CREAR ILUMINACIÓN
+            var ambient = new THREE.AmbientLight( 0xffffff, 2 );
+            scene.add( ambient );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+            pointLight.position.set( -5, -2, 5 );
+            scene.add( pointLight );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, .5, 100 );
+            pointLight.position.set( 5, -2, -5 );
+            scene.add( pointLight );
+			
+			//CREAR LAS GEOMETRÍAS
+			var boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );//2 cubos
+			var sphereGeometry = new THREE.SphereGeometry( 0.6, 32, 32 );
+			var cylinderGeometry = new THREE.CylinderGeometry( 1, 1	, 1, 32 );//5 cilindros( 4 completos 1 la mitad)
+			
+			
+			
+			
+						
+			//CREAR LOS MATERIALES
+            var material1 = new THREE.MeshStandardMaterial( { color: colorR, metalness: 0.5, roughness: 0.1 } );
+			var material2 = new THREE.MeshStandardMaterial( { color: colorG, metalness: 0.5, roughness: 0.1 } );
+			var material3 = new THREE.MeshStandardMaterial( { color: colorB, metalness: 0.5, roughness: 0.1 } );
+			var material4 = new THREE.MeshStandardMaterial( { color: colorWhite, metalness: 0.5, roughness: 0.1 } );
+			var material5 = new THREE.MeshStandardMaterial( { color: colorBlack, metalness: 0.5, roughness: 0.1 } );
+
+			var material6 = new THREE.MeshStandardMaterial( { color: colorPink, metalness: 0.5, roughness: 0.1 } );
+			var material7 = new THREE.MeshStandardMaterial( { color: colorGray, metalness: 0.7, roughness: 1 } );
+
+
+
+			
+			
+			//CREAR LAS MALLAS
+			var cuboGrandeCabeza = new THREE.Mesh( boxGeometry );
+			var cuboEliminar1 = new THREE.Mesh( boxGeometry );
+			var cuboEliminar2 = new THREE.Mesh( boxGeometry );
+			var cuboEliminar3 = new THREE.Mesh( boxGeometry );
+			var cuboEliminar4 = new THREE.Mesh( boxGeometry );
+			
+			var cuboEliminarLateral1 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral2 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral3 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral4 = new THREE.Mesh( boxGeometry );
+			
+			var cuboEliminarLateral5 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral6 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral7 = new THREE.Mesh( boxGeometry );
+			var cuboEliminarLateral8 = new THREE.Mesh( boxGeometry );
+			var cubonariz = new THREE.Mesh( boxGeometry );
+			
+			
+			var cuboOrejaIzq = new THREE.Mesh( boxGeometry );
+			var cuboOrejaDer = new THREE.Mesh( boxGeometry );
+			
+			var CuboOrejaIzqArriba= new THREE.Mesh( boxGeometry );
+			var CuboOrejaDerArriba= new THREE.Mesh( boxGeometry );
+			
+			
+			var CuboOrejaIzqAtras= new THREE.Mesh( boxGeometry );
+			var CuboOrejaDerAtras= new THREE.Mesh( boxGeometry );
+			
+			var CuboOrejaIzqAtras2= new THREE.Mesh( boxGeometry );
+			var CuboOrejaDerAtras2= new THREE.Mesh( boxGeometry );
+			
+			var Ojo1 = new THREE.Mesh( sphereGeometry );
+			var Ojo2 = new THREE.Mesh( sphereGeometry );
+			
+			var cola = new THREE.Mesh( sphereGeometry );
+			
+			
+			//var cilindroArriba1 = new THREE.Mesh( cylinderGeometry, material3 );
+			//var cilindroArriba2 = new THREE.Mesh( cylinderGeometry, material3 );
+			//var cilindroArriba3 = new THREE.Mesh( cylinderGeometry, material3 );
+			
+			//var cilindroLados1 = new THREE.Mesh( cylinderGeometry, material3 );
+			//var cilindroLados2 = new THREE.Mesh( cylinderGeometry, material3 );
+			
+			//transformaciones
+			//ESCALAS
+			cuboGrandeCabeza.scale.set(10,7,5);
+			cuboEliminar1.scale.set(10,1,1);
+			cuboEliminar2.scale.set(10,1,1);
+			cuboEliminar3.scale.set(10,1,1);
+			cuboEliminar4.scale.set(10,1,1);
+			
+			cuboEliminarLateral1.scale.set(1,5,1);
+			cuboEliminarLateral2.scale.set(1,5,1);
+			cuboEliminarLateral3.scale.set(1,5,1);
+			cuboEliminarLateral4.scale.set(1,5,1);
+			
+			cuboEliminarLateral5.scale.set(1,1,5);
+			cuboEliminarLateral6.scale.set(1,1,5);
+			cuboEliminarLateral7.scale.set(1,1,5);
+			cuboEliminarLateral8.scale.set(1,1,5);
+			
+			
+			
+			cuboOrejaIzq.scale.set(5,7,1);
+			cuboOrejaDer.scale.set(5,7,1);
+			
+			CuboOrejaIzqArriba.scale.set(2,1,1);
+			CuboOrejaDerArriba.scale.set(2,1,1);
+			
+			CuboOrejaIzqAtras.scale.set(4,5,1);
+			CuboOrejaDerAtras.scale.set(4,5,1);
+			
+			CuboOrejaIzqAtras2.scale.set(2,3,1);
+			CuboOrejaDerAtras2.scale.set(2,3,1);
+			
+			
+			cubonariz.scale.set(1,1,1);
+			
+			Ojo1.scale.set(0.5,0.5,0.5);
+			Ojo2.scale.set(0.5,0.5,0.5);
+			
+			cola.scale.set(2.5,2.5,2.5);
+			
+			//cilindroArriba1.scale.set(1.5, 3, 1.5);
+			//cilindroArriba2.scale.set(3,2,3);
+			//cilindroArriba3.scale.set(4,2,4);
+			
+			//cilindroLados1.scale.set(1.5,10,1.5);
+			//cilindroLados2.scale.set(4.,10,4.);
+			//ROTACION
+			
+			//cilindroLados1.rotateZ(Math.PI / 2 );
+			//cilindroLados2.rotateZ(Math.PI / 2 );
+			
+			//TRASLASION
+			
+			//cabeza
+			cuboEliminar1.translateZ( 2);
+			cuboEliminar1.translateY(3);
+			
+			cuboEliminar2.translateZ( -2);
+			cuboEliminar2.translateY(3);
+			
+			cuboEliminar3.translateZ( 2);
+			cuboEliminar3.translateY(-3);
+			
+			cuboEliminar4.translateZ( -2);
+			cuboEliminar4.translateY(-3);
+			
+			
+			
+			cuboEliminarLateral1.translateX(-4.5);
+			cuboEliminarLateral1.translateZ(-2);
+			
+			cuboEliminarLateral2.translateX(4.5);
+			cuboEliminarLateral2.translateZ(2);
+			
+			cuboEliminarLateral3.translateX(4.5);
+			cuboEliminarLateral3.translateZ(-2);
+				
+			cuboEliminarLateral4.translateX(-4.5);
+			cuboEliminarLateral4.translateZ(2);
+			
+			
+			
+			cuboEliminarLateral5.translateX(-4.5);
+			cuboEliminarLateral5.translateY(-3);
+			
+			cuboEliminarLateral6.translateX(4.5);
+			cuboEliminarLateral6.translateY(3);
+			
+			cuboEliminarLateral7.translateX(4.5);
+			cuboEliminarLateral7.translateY(-3);
+				
+			cuboEliminarLateral8.translateX(-4.5);
+			cuboEliminarLateral8.translateY(3);
+			//orejas
+			
+			cuboOrejaIzq.translateX(3.5);
+			cuboOrejaIzq.translateY(6);
+			
+			CuboOrejaIzqArriba.translateX(3.5);
+			CuboOrejaIzqArriba.translateY(10);
+			
+			
+			cuboOrejaDer.translateX(-3.5);
+			cuboOrejaDer.translateY(6);
+			
+			CuboOrejaDerArriba.translateX(-3.5);
+			CuboOrejaDerArriba.translateY(10);
+			
+			CuboOrejaIzqAtras.translateX(3.5);
+			CuboOrejaIzqAtras.translateY(6.5);
+			CuboOrejaIzqAtras.translateZ(-1);
+			
+			CuboOrejaDerAtras.translateX(-3.5);
+			CuboOrejaDerAtras.translateY(6.5);
+			CuboOrejaDerAtras.translateZ(-1);
+			
+			CuboOrejaIzqAtras2.translateX(3.5);
+			CuboOrejaIzqAtras2.translateY(6.5);
+			CuboOrejaIzqAtras2.translateZ(-2);
+			
+			CuboOrejaDerAtras2.translateX(-3.5);
+			CuboOrejaDerAtras2.translateY(6.5);
+			CuboOrejaDerAtras2.translateZ(-2);
+			
+			
+			cubonariz.translateZ( 2.5);
+			cubonariz.translateY(-0.7);
+			
+			
+			Ojo1.translateZ(5.8);
+			Ojo1.translateY(1);
+			Ojo1.translateX(2);
+			
+			Ojo2.translateZ(5.8);
+			Ojo2.translateY(1);
+			Ojo2.translateX(-2);
+			
+			cola.translateZ(-7);
+			cola.translateY(-3);
+			
+			
+			
+			//CONVERTIR A CSG
+			
+			var cuboGrandeCabezaCSG = THREE.CSG.fromMesh( cuboGrandeCabeza );
+			var cuboEliminar1CSG = THREE.CSG.fromMesh( cuboEliminar1 );
+			var cuboEliminar2CSG = THREE.CSG.fromMesh( cuboEliminar2 );
+			var cuboEliminar3CSG = THREE.CSG.fromMesh( cuboEliminar3 );
+			var cuboEliminar4CSG = THREE.CSG.fromMesh( cuboEliminar4 );
+			
+			
+			
+			var cuboEliminarLateral1CSG = THREE.CSG.fromMesh( cuboEliminarLateral1 );
+			var cuboEliminarLateral2CSG = THREE.CSG.fromMesh( cuboEliminarLateral2 );
+			var cuboEliminarLateral3CSG = THREE.CSG.fromMesh( cuboEliminarLateral3 );
+			var cuboEliminarLateral4CSG = THREE.CSG.fromMesh( cuboEliminarLateral4 );
+			var cuboEliminarLateral5CSG = THREE.CSG.fromMesh( cuboEliminarLateral5 );
+			var cuboEliminarLateral6CSG = THREE.CSG.fromMesh( cuboEliminarLateral6 );
+			var cuboEliminarLateral7CSG = THREE.CSG.fromMesh( cuboEliminarLateral7 );
+			var cuboEliminarLateral8CSG = THREE.CSG.fromMesh( cuboEliminarLateral8 );
+					//OREJAS
+			
+			var cuboOrejaDerCSG = THREE.CSG.fromMesh( cuboOrejaDer );
+			var cuboOrejaIzqCSG = THREE.CSG.fromMesh( cuboOrejaIzq );
+			var cuboOrejaDerArribaCSG = THREE.CSG.fromMesh( CuboOrejaDerArriba );
+			var cuboOrejaIzqArribaCSG = THREE.CSG.fromMesh( CuboOrejaIzqArriba );
+			var cuboOrejaDerAtrasCSG = THREE.CSG.fromMesh( CuboOrejaDerAtras );
+			var cuboOrejaIzqAtrasCSG = THREE.CSG.fromMesh( CuboOrejaIzqAtras );
+			var cuboOrejaDerAtras2CSG = THREE.CSG.fromMesh( CuboOrejaDerAtras2 );
+			var cuboOrejaIzqAtras2CSG = THREE.CSG.fromMesh( CuboOrejaIzqAtras2 );
+			var cubonarizCSG = THREE.CSG.fromMesh( cubonariz );
+			
+
+			
+			
+			//OPERACIONES BOLEANAS
+			var Cabeza1 = cuboGrandeCabezaCSG.subtract( cuboEliminar1CSG );
+			var Cabeza2 = Cabeza1.subtract( cuboEliminar2CSG );
+			var Cabeza3 = Cabeza2.subtract( cuboEliminar3CSG );
+			var Cabeza4 = Cabeza3.subtract( cuboEliminar4CSG );
+			var Cabeza5 = Cabeza4.subtract( cuboEliminarLateral1CSG );
+			var Cabeza6 = Cabeza5.subtract( cuboEliminarLateral2CSG );
+			var Cabeza7 = Cabeza6.subtract( cuboEliminarLateral3CSG);
+			var Cabeza8 = Cabeza7.subtract( cuboEliminarLateral4CSG);
+			var Cabeza9 = Cabeza8.subtract( cuboEliminarLateral5CSG);
+			var Cabeza10 = Cabeza9.subtract( cuboEliminarLateral6CSG );
+			var Cabeza11 = Cabeza10.subtract( cuboEliminarLateral7CSG);
+			var Cabeza12 = Cabeza11.subtract( cuboEliminarLateral8CSG);
+			
+			var OrejaIzq1=cuboOrejaIzqCSG.union(cuboOrejaIzqArribaCSG);
+			var OrejaIzq2=OrejaIzq1.union(cuboOrejaIzqAtrasCSG );
+			var OrejaIzq3=OrejaIzq2.union(cuboOrejaIzqAtras2CSG );
+			
+			var OrejaDer1=cuboOrejaDerCSG.union(cuboOrejaDerArribaCSG);
+			var OrejaDer2=OrejaDer1.union(cuboOrejaDerAtrasCSG );
+			var OrejaDer3=OrejaDer2.union(cuboOrejaDerAtras2CSG );
+			
+			//UNION Cabeza	
+			
+			var CabezaConejo=Cabeza12.union(OrejaDer3 );
+			var CabezaConejo1=CabezaConejo.union(OrejaIzq3);
+			var CabezaConejo2=CabezaConejo1.union(cubonarizCSG);
+			
+
+
+
+			
+			
+
+			
+			
+	
+			
+			
+			//var cubocilindro = cuboGrandeCSG.union( cilindroLados2CSG );
+			//var anillosuperior = cilindroArriba3CSG.subtract( cilindroArriba2CSG );
+			//var cilindrolateral =cubocilindro.subtract(cilindroLados1CSG);
+			//var cilindrosuperior =cilindrolateral.subtract(cilindroArriba1CSG);
+			//var piezaconanillo =cilindrosuperior.union(anillosuperior);
+			//var piezafinal =piezaconanillo.subtract(cuboPequenoCSG);
+			
+			
+			
+			// convertir a trhee.js
+			
+			CABEZA12=THREE.CSG.toMesh(CabezaConejo2);
+			CABEZA12.scale.set(0.9,0.9,0.9);
+			CABEZA12.translateZ(3.5);
+			
+			//CUBOCILINDRO=THREE.CSG.toMesh(cubocilindro);
+			//ANILLOSUPERIOR=THREE.CSG.toMesh(anillosuperior);
+			//CILINDROLATERAL=THREE.CSG.toMesh(cilindrolateral);
+			//CILINDROSUPERIOR=THREE.CSG.toMesh(cilindrosuperior);
+			//PIEZACONANILLO=THREE.CSG.toMesh(piezaconanillo);
+			//PIEZAFINAL=THREE.CSG.toMesh(piezafinal);
+			
+			// material del objeto final
+			
+			CABEZA12.material = material7;
+			cola.material = material7;
+
+			
+			//AGREGAR A LA ESCENA LOS DIFERENTES ELEMENTOS
+			//ACTIVAR PARA VISUALIZAR PIEZAS
+			//------------------------------------------------------------------------------------------------
+			//EXTRUDE PATAS TRASERAS
+			
+			 var curve2D1 = [];
+                curve2D1[0] = new THREE.Vector2( 1, 1 );
+				curve2D1[1] = new THREE.Vector2( 2, 2 );
+				curve2D1[2] = new THREE.Vector2( 0, 4 ); 
+				curve2D1[3] = new THREE.Vector2( 2, 6 ); 
+				curve2D1[4] = new THREE.Vector2( 0.5, 7 );
+				curve2D1[5] = new THREE.Vector2( -2, 5 ); 
+				curve2D1[6] = new THREE.Vector2( -1.5, 3 ); 
+				curve2D1[7] = new THREE.Vector2( 0, 2 );
+				curve2D1[8] = new THREE.Vector2( -2, 2 ); 
+				curve2D1[9] = new THREE.Vector2(-3, 1 );
+				curve2D1[10] = new THREE.Vector2(-2, 0 );
+				
+			var shape1 = new THREE.Shape();
+			shape1.moveTo(0,0);
+			
+			
+			shape1.splineThru(curve2D1);
+            
+            var material = new THREE.LineBasicMaterial( { color : colorGray } );
+            var resolution = 50;
+            var points = shape1.getPoints( resolution );
+            var geometry = new THREE.BufferGeometry().setFromPoints( points );
+            // Create the final object to add to the scene
+            var curveObject1 = new THREE.Line( geometry, material );
+            
+			//EXTRUD
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 1,
+				amount: 2,
+				bevelEnabled: false,
+			};
+
+			var geometryExt = new THREE.ExtrudeGeometry( shape1, extrudeSettings );
+			var materialExt= new THREE.MeshStandardMaterial( { 
+				color: colorGray, 
+				metalness: 0.7, 
+				roughness: 1,
+				opacity: 1,
+				transparent: true			
+			} );
+			
+			var mesh1 = new THREE.Mesh( geometryExt, materialExt ) ;
+			
+			//mesh.translateX(3.5);
+			mesh1.translateY(-12.5);
+			mesh1.translateX(2);
+			mesh1.translateZ(-5);
+			//mesh.translateZ(-1);
+			mesh1.rotateY(Math.PI / 2 );
+			derechamesh1 = mesh1.clone();
+			scene.add( mesh1 )
+			derechamesh1.translateZ(-6);
+			scene.add( derechamesh1 )
+			
+			
+		
+			
+			//translacion
+			
+			//curveObject.translateX(3.5);
+			//curveObject.translateY(6.5);
+			//curveObject.translateZ(-1);
+			
+			//---------------------------------------------------------------------------------------------------
+			
+			
+			
+			//EXTRUDE CUERPO
+			
+			 var curve2D = [];
+                curve2D[0] = new THREE.Vector2( 3, 0 );
+				curve2D[1] = new THREE.Vector2( 7, 2 );
+				curve2D[2] = new THREE.Vector2( 8, 5 ); 
+				curve2D[3] = new THREE.Vector2( 6, 7 ); 
+				curve2D[4] = new THREE.Vector2( 4, 7 );
+				curve2D[5] = new THREE.Vector2( 1, 6 ); 
+				curve2D[6] = new THREE.Vector2( -2, 7 ); 
+				curve2D[7] = new THREE.Vector2( -4, 6 );
+				curve2D[8] = new THREE.Vector2( -4, 3 ); 
+				curve2D[9] = new THREE.Vector2(-2, 1 );
+				curve2D[10] = new THREE.Vector2(0, 0 );
+				
+			var shape = new THREE.Shape();
+			shape.moveTo(0,0);
+			
+			
+			shape.splineThru(curve2D);
+            
+            var material = new THREE.LineBasicMaterial( { color : colorGray } );
+            var resolution = 50;
+            var points = shape.getPoints( resolution );
+            var geometry = new THREE.BufferGeometry().setFromPoints( points );
+            // Create the final object to add to the scene
+            var curveObject = new THREE.Line( geometry, material );
+            
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 1,
+				amount: 4,
+				bevelEnabled: false,
+			};
+
+			var geometryExt = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+			var materialExt= new THREE.MeshStandardMaterial( { 
+				color: colorGray, 
+				metalness: 0.7, 
+				roughness: 1,
+				opacity: 1,
+				transparent: true			
+			} );
+			
+			var mesh = new THREE.Mesh( geometryExt, materialExt ) ;
+			
+			//mesh.translateX(3.5);
+			mesh.translateY(-10);
+			mesh.translateX(-2);
+			mesh.translateZ(1);
+			//mesh.translateZ(-1);
+			mesh.rotateY(Math.PI / 2 );
+			scene.add( mesh )
+			
+			
+			//translacion
+			
+			//curveObject.translateX(3.5);
+			//curveObject.translateY(6.5);
+			//curveObject.translateZ(-1);
+			
+			
+			
+			
+			
+			
+			//--------------------------------------------------------------------------------------------------------
+			//EXTRUDE PATAS DELANTERAS
+			
+			 var curve22D = [];
+                curve22D[0] = new THREE.Vector2( 1, -0.8 );
+				curve22D[1] = new THREE.Vector2( 2, 0 );
+				curve22D[2] = new THREE.Vector2( 4, 1 );
+				curve22D[3] = new THREE.Vector2( 4.7, 2 ); 
+				curve22D[4] = new THREE.Vector2( 5, 3 ); 
+				curve22D[5] = new THREE.Vector2( 5, 4 );
+				curve22D[6] = new THREE.Vector2( 4, 4.8 ); 
+				curve22D[7] = new THREE.Vector2( 3, 4 ); 
+				curve22D[8] = new THREE.Vector2( 2, 2 );	
+				curve22D[9] = new THREE.Vector2(0, 1 );
+				curve22D[10] = new THREE.Vector2(0, 0 );
+				
+			var shape2 = new THREE.Shape();
+			shape2.moveTo(0,0);
+			
+			
+			shape2.splineThru(curve22D);
+            
+            var material = new THREE.LineBasicMaterial( { color : colorGray } );
+            var resolution = 50;
+            var points = shape2.getPoints( resolution );
+            var geometry = new THREE.BufferGeometry().setFromPoints( points );
+            // Create the final object to add to the scene
+            var curveObject2 = new THREE.Line( geometry, material );
+            
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 1,
+				amount: 2,
+				bevelEnabled: false,
+			};
+
+			var geometryExt = new THREE.ExtrudeGeometry( shape2, extrudeSettings );
+			var materialExt= new THREE.MeshStandardMaterial( { 
+				color: colorGray, 
+				metalness: 0.7, 
+				roughness: 1,
+				opacity: 1,
+				transparent: true			
+			} );
+			
+			var mesh2 = new THREE.Mesh( geometryExt, materialExt ) ;
+			
+			//mesh.translateX(3.5);
+			mesh2.translateY(-10.5);
+			mesh2.translateX(2);
+			mesh2.translateZ(6);
+			//mesh.translateZ(-1);
+			mesh2.rotateY(Math.PI / 2 );
+			derechamesh2 = mesh2.clone();
+			derechamesh2.translateZ(-6);
+			
+			scene.add( mesh2 )
+			scene.add( derechamesh2 )
+			
+			
+			//translacion
+			
+			//curveObject.translateX(3.5);
+			//curveObject.translateY(6.5);
+			//curveObject.translateZ(-1);
+			
+			
+			
+			
+			//--------------------------------------------------------------------------------------------------------
+			 
+			 var curve1 = new THREE.CubicBezierCurve3(
+                new THREE.Vector3( 0, 0, 0 ),
+                new THREE.Vector3( 0, 8, 0 ),
+                new THREE.Vector3( 9, 5, 0 ),
+                new THREE.Vector3( 14, 0, 0 )
+            );
+            
+            var curve2 = new THREE.CubicBezierCurve3(
+                new THREE.Vector3( 0, 0, -5 ),
+                new THREE.Vector3( 0, 8, -5 ),
+                new THREE.Vector3( 9, 5, -5 ),
+                new THREE.Vector3( 14, 0, -5 )
+            );
+            
+            var pointGeometry = new THREE.Geometry();
+            for(var i=0; i<20; i++){
+                var point = curve1.getPoint( i/20 );
+                pointGeometry.vertices.push( point );
+            }
+            
+            for(var i=0; i<20; i++){
+                var point = curve2.getPoint( i/20 );
+                pointGeometry.vertices.push( point );
+            }
+
+            var pointMaterial = new THREE.PointsMaterial( { color: 0x00FF00 } );
+            var curvePoints = new THREE.Points( pointGeometry, pointMaterial );
+            
+            var material = new THREE.MeshStandardMaterial( { color : colorWhite } );
+            material.side = THREE.DoubleSide;
+            for(var i=0; i<19; i++){
+                var face1 = new THREE.Face3( i, i+1, i+20 );
+                pointGeometry.faces.push( face1 );
+                var face2 = new THREE.Face3( i+1, i+20, i+21 );
+                pointGeometry.faces.push( face2 );
+            }
+            pointGeometry.computeFaceNormals();
+            //pointGeometry.computeVertexNormals();
+		
+			
+			bigotes= new THREE.Mesh( pointGeometry, material );
+			
+			bigotes.scale.set(0.2,0.1,0.03);
+			
+			bigotes.translateY(-0.7);
+			bigotes.translateX(0);
+			bigotes.translateZ(6);
+			
+			bigotes2 = bigotes.clone();
+			bigotes2.translateY(-0.32);
+			
+			bigotes3 = bigotes.clone();
+			bigotes3.translateX(-2.5);
+			bigotes3.translateY(0.15);
+			bigotes4 = bigotes3.clone();
+			bigotes3.translateY(-0.5);
+
+            scene.add( bigotes );
+			scene.add( bigotes2 );
+			scene.add( bigotes3 );
+			scene.add( bigotes4 );
+
+            
+		  	//AGREGAR A LA ESCENA
+          
+            //scene.add( curvePoints );
+			
+			//--------------------------------------------------------------------------
+			//convex hull
+			
+			
+			//--------------------------------------------------------------------------------------------------------
+			//AGREGAR ESCENA
+	
+			scene.add(CABEZA12);
+			scene.add(cola);
+		
+			
+			Ojo1.material = material1;
+			Ojo2.material = material1;
+			scene.add(Ojo1);
+			scene.add(Ojo2);
+			
+			
+			
+			//scene.add( curveObject );
+	
+
+			camera.position.x = 15;
+			camera.position.y = 5;
+		  	camera.position.z = 20;
+			camera.lookAt( origin );
+		}
+		function animate(){
+			requestAnimationFrame( animate );
+			controls.update();
+			render();
+		}
+		function render(){
+			renderer.render( scene, camera );
+		}
+    </script>
+  </body>
+</html>
