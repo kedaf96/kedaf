@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plantilla Base</title>
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; }
+    </style>
+  </head>
+  <body>
+    <script src="js/three.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<script src="js/csg.js"></script>
+	<script src="js/THREE.CSG.js"></script>
+	<script src="js/QuickHull.js"></script>
+	<script src="js/geometries/ConvexGeometry.js"></script>
+    <script>
+		var scene, aspect, camera, renderer, controls;
+		init();
+		animate();
+		function init(){
+			//INICIALIZACIÓN
+	        scene = new THREE.Scene();
+	        aspect = window.innerWidth / window.innerHeight;
+	        camera = new THREE.PerspectiveCamera( 75, aspect, 0.1, 1000);
+	        renderer = new THREE.WebGLRenderer();
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        document.body.appendChild( renderer.domElement );
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			
+			//ELEMENTOS COMUNES
+			var size = 10;
+			var arrowSize = 1;
+			var divisions = size;
+			var origin = new THREE.Vector3( 0, 0, 0 );
+			var x = new THREE.Vector3( 1, 0, 0 );
+			var y = new THREE.Vector3( 0, 1, 0 );
+		  	var z = new THREE.Vector3( 0, 0, 1 );
+		  	var color = new THREE.Color( 0x333333 );
+		  	var colorR = new THREE.Color( 0xAA3333 );
+		  	var colorG = new THREE.Color( 0x33AA33 );
+		  	var colorB = new THREE.Color( 0x333366 );
+			var colorWhite = new THREE.Color( 0xFFFFFF);
+			var colorBlack = new THREE.Color( 0x000000 );
+			var colorPink = new THREE.Color( 0xEA9999 );
+			var colorGray = new THREE.Color( 0x999999 );
+			
+		  	//CREAR LAS GRILLAS PARA EL ESCENARIO
+		  	var axesHelper = new THREE.AxesHelper( size );
+			scene.add( axesHelper );
+			
+		  	var gridHelperXZ = new THREE.GridHelper( size, divisions, color, color );
+			scene.add( gridHelperXZ );
+            
+            //ROTARLAS PARA QUE QUEDEN EN EL ESPACIO ADECUADO
+            gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+
+            //CREAR ILUMINACIÓN
+            var ambient = new THREE.AmbientLight( 0xffffff, 2 );
+            scene.add( ambient );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, 1, 100 );
+            pointLight.position.set( -5, -2, 5 );
+            scene.add( pointLight );
+			
+            var pointLight = new THREE.PointLight( 0xffffff, .5, 100 );
+            pointLight.position.set( 5, -2, -5 );
+            scene.add( pointLight );
+			
+			//CREAR LAS GEOMETRÍAS
+			var boxGeometry = new THREE.BoxGeometry( 1, 1, 1 );//2 cubos
+			var sphereGeometry = new THREE.SphereGeometry( 0.6, 32, 32 );
+			var cylinderGeometry = new THREE.CylinderGeometry( 1, 1	, 1, 32 );//5 cilindros( 4 completos 1 la mitad)
+			
+			
+			
+			
+						
+			//CREAR LOS MATERIALES
+            var material1 = new THREE.MeshStandardMaterial( { color: colorR, metalness: 0.5, roughness: 0.1 } );
+			var material2 = new THREE.MeshStandardMaterial( { color: colorG, metalness: 0.5, roughness: 0.1 } );
+			var material3 = new THREE.MeshStandardMaterial( { color: colorB, metalness: 0.5, roughness: 0.1 } );
+			var material4 = new THREE.MeshStandardMaterial( { color: colorWhite, metalness: 0.5, roughness: 0.1 } );
+			var material5 = new THREE.MeshStandardMaterial( { color: colorBlack, metalness: 0.5, roughness: 0.1 } );
+
+			var material6 = new THREE.MeshStandardMaterial( { color: colorPink, metalness: 0.5, roughness: 0.1 } );
+			var material7 = new THREE.MeshStandardMaterial( { color: colorGray, metalness: 0.7, roughness: 1 } );
+
+
+
+			
+			
+	
+			
+			//---------------------------------------------------------------------------------------------------
+			
+			
+			
+			//EXTRUDE CUERPO
+			
+			 var curve2D = [];
+                curve2D[0] = new THREE.Vector2( 0, 0 );
+				curve2D[1] = new THREE.Vector2( 4, 3 );
+				curve2D[2] = new THREE.Vector2( 4.5, 3.5 ); 
+				curve2D[3] = new THREE.Vector2( 5, 3 ); 
+				curve2D[4] = new THREE.Vector2( 8.2, 6 );
+				curve2D[5] = new THREE.Vector2( 8, 3 ); 
+				curve2D[6] = new THREE.Vector2( 9.5, 1 ); 
+				curve2D[7] = new THREE.Vector2( 7, -1 );
+				curve2D[8] = new THREE.Vector2( 6.5, -3.5 ); 
+				curve2D[9] = new THREE.Vector2(3, -4 );
+				curve2D[10] = new THREE.Vector2(1.5, -6 );
+				curve2D[11] = new THREE.Vector2( 1.5, -8 );
+				curve2D[12] = new THREE.Vector2( 1, -9 );
+				curve2D[13] = new THREE.Vector2( 0.5, -10 ); 
+				curve2D[14] = new THREE.Vector2( 0.5, -10.5 ); 
+				curve2D[15] = new THREE.Vector2( -0.2, -10.5);
+				curve2D[16] = new THREE.Vector2( 0.2, -9 ); 
+				curve2D[17] = new THREE.Vector2( 0, -7.2 ); 
+				curve2D[18] = new THREE.Vector2( -2, -9 );
+				curve2D[19] = new THREE.Vector2( -3.7, -7 ); 
+				curve2D[20] = new THREE.Vector2(-4, -8 );
+				curve2D[21] = new THREE.Vector2(-4, -9 );
+				curve2D[22] = new THREE.Vector2( -3.5, -10 );
+				curve2D[23] = new THREE.Vector2( -4.1, -10.2 );
+				curve2D[24] = new THREE.Vector2( -5, -9 ); 
+				curve2D[25] = new THREE.Vector2( -5, -8 ); 
+				curve2D[26] = new THREE.Vector2( -5, -6 );
+				curve2D[27] = new THREE.Vector2( -6, -4 ); 
+				curve2D[28] = new THREE.Vector2( -9, -3.2 ); 
+				curve2D[29] = new THREE.Vector2( -10.2, -1 );
+				curve2D[30] = new THREE.Vector2( -13, 1 ); 
+				curve2D[31] = new THREE.Vector2(-12, 3 );
+				curve2D[32] = new THREE.Vector2(-11.5, 6.5 );
+				curve2D[33] = new THREE.Vector2( -10, 4.3 );
+				curve2D[34] = new THREE.Vector2( -8, 3 );
+				curve2D[35] = new THREE.Vector2( -7.5, 4 ); 
+				curve2D[36] = new THREE.Vector2( -3.7, -0.2 ); 
+				curve2D[37] = new THREE.Vector2( -3.2,0.8 );	
+				curve2D[38] = new THREE.Vector2( -4, 0.8 ); 
+				curve2D[39] = new THREE.Vector2( -4.5, 1.2 ); 
+				curve2D[40] = new THREE.Vector2( -4.5, 2 );
+				curve2D[41] = new THREE.Vector2( -5, 3 ); 
+				curve2D[42] = new THREE.Vector2(-4, 3 );
+				curve2D[43] = new THREE.Vector2(-3, 1.8 );
+				curve2D[44] = new THREE.Vector2( -1, 2 );
+				curve2D[45] = new THREE.Vector2( -0.8, 2 );
+				curve2D[46] = new THREE.Vector2( 0, 1.5 ); 
+				curve2D[47] = new THREE.Vector2( 0, 2 ); 
+				curve2D[48] = new THREE.Vector2( 1.5,3 );
+				curve2D[49] = new THREE.Vector2( 1.8, 2 ); 
+				curve2D[50] = new THREE.Vector2( 1.2, 1.7 ); 
+				curve2D[51] = new THREE.Vector2( 1.2, 1 );
+				curve2D[52] = new THREE.Vector2( 0, 0.9 );
+				
+				
+			var shape = new THREE.Shape();
+			shape.moveTo(0,0);
+			
+			
+			shape.splineThru(curve2D);
+            
+            var material = new THREE.LineBasicMaterial( { color : colorGray } );
+            var resolution = 53;
+            var points = shape.getPoints( resolution );
+            var geometry = new THREE.BufferGeometry().setFromPoints( points );
+            // Create the final object to add to the scene
+            var curveObject = new THREE.Line( geometry, material );
+            
+			//EXTRUDE
+			var extrudeSettings = {
+				steps: 1,
+				amount: 0.7,
+				bevelEnabled: false,
+			};
+
+			var geometryExt = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+			var materialExt= new THREE.MeshStandardMaterial( { 
+				color: colorGray, 
+				metalness: 0.7, 
+				roughness: 1,
+				opacity: 1,
+				transparent: true			
+			} );
+			
+			var mesh = new THREE.Mesh( geometryExt, materialExt ) ;
+			
+			//mesh.translateX(3.5);
+			//mesh.translateY(-10);
+			//mesh.translateX(-2);
+			//mesh.translateZ(1);
+			//mesh.translateZ(-1);
+			//mesh.rotateY(Math.PI / 2 );
+			scene.add( mesh )
+			
+			
+			//translacion
+			
+			//curveObject.translateX(3.5);
+			//curveObject.translateY(6.5);
+			//curveObject.translateZ(-1);
+			
+			
+			
+			
+			
+			
+			//--------------------------------------------------------------------------------------------------------
+			
+
+            
+		  	//AGREGAR A LA ESCENA
+          
+            //scene.add( curvePoints );
+			
+			//--------------------------------------------------------------------------
+			//convex hull
+			
+			
+			//--------------------------------------------------------------------------------------------------------
+			//AGREGAR ESCENA
+	
+			
+			
+			
+			
+			
+			
+			
+			//scene.add( curveObject );
+	
+
+			camera.position.x = 15;
+			camera.position.y = 5;
+		  	camera.position.z = 20;
+			camera.lookAt( origin );
+		}
+		function animate(){
+			requestAnimationFrame( animate );
+			controls.update();
+			render();
+		}
+		function render(){
+			renderer.render( scene, camera );
+		}
+    </script>
+  </body>
+</html>
